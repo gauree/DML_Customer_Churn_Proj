@@ -1,26 +1,43 @@
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import os
+
+def get_root():
+    return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 def preprocess():
-    # Load raw data
-    df = pd.read_csv("data/raw/customer_churn.csv")
+    root = get_root()
+    raw_path = os.path.join(root, "data", "raw", "customer_churn.csv")
 
-    # Example cleaning steps - you can modify based on your dataset
-    df = df.dropna()        # remove missing rows
+    df = pd.read_csv(raw_path)
+
+    if "customerID" in df.columns:
+        df = df.drop(columns=["customerID"])
+
+    if "TotalCharges" in df.columns:
+        df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
+
+    df = df.dropna()
     df = df.drop_duplicates()
 
-    # Train-test split
-    train, test = train_test_split(df, test_size=0.2, random_state=42)
+    target_col = "Churn"
+    if target_col not in df.columns:
+        raise ValueError("Churn column 'Churn' not found in dataset")
 
-    # Ensure folder exists
-    os.makedirs("data/processed", exist_ok=True)
+    train_df, test_df = train_test_split(
+        df, test_size=0.2, random_state=42, stratify=df[target_col]
+    )
 
-    # Save outputs
-    train.to_csv("data/processed/train.csv", index=False)
-    test.to_csv("data/processed/test.csv", index=False)
+    processed_dir = os.path.join(root, "data", "processed")
+    os.makedirs(processed_dir, exist_ok=True)
 
-    print("Preprocessing complete!")
+    train_path = os.path.join(processed_dir, "train.csv")
+    test_path = os.path.join(processed_dir, "test.csv")
+
+    train_df.to_csv(train_path, index=False)
+    test_df.to_csv(test_path, index=False)
+
+print("Preprocessing complete: train.csv and test.csv created")
 
 if __name__ == "__main__":
     preprocess()
