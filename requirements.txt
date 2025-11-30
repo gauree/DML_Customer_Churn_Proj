@@ -4,6 +4,7 @@ numpy
 dvc
 mlflow
 xgboost
+Flask
 
 # test dependencies
 pytest

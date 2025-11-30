@@ -1,0 +1,29 @@
+# Python cache and virtualenvs
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.env
+.venv
+venv/
+
+# Git and DVC
+.git/
+.dvc/
+.dvcignore
+
+# Local data and artifacts that are not needed in the image
+mlruns/
+.dvc/cache/
+.dvc/tmp/
+
+# OS / editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Docker
+Dockerfile
+.dockerignore
